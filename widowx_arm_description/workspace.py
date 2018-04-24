@@ -42,6 +42,7 @@
 import csv
 import os
 import sys
+import time
 
 import numpy as np
 from geometry_msgs.msg import PoseStamped
@@ -55,7 +56,7 @@ from operator import mul
 #TODO: PASS THESE IN AS ARGUMENTS
 ARM_GROUP = "widowx_arm"
 GRIPPER_GROUP = "widowx_gripper"
-REF_FRAME = "arm_base_link"
+REF_FRAME = "base_link"
 LAUNCH_RVIZ = False
 WIDOWX_JOINT_LIMITS =  [[-2.617, 2.167],
                         [-1.571, 1.571],
@@ -130,12 +131,11 @@ class MoveItInterface(object):
         req.fk_link_names = [link_names]
         req.robot_state.joint_state.name = ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5"]
         req.robot_state.joint_state.position = joint_angles
-        #print req
+        
         # Try to send the request to the 'compute_fk' service
         try:
             resp = self.fk_srv.call(req)
             return resp
-
         except rospy.ServiceException:
             rospy.logerr("Service execption:" + str(rospy.ServiceException))
             
@@ -174,9 +174,10 @@ def generate_robot_workspace(joint_limits):
         range_len.append(len(arange))
         angle_range.append(arange)
     
-    # preallocate array of all possible combinations
-    combination_len = reduce(mul, range_len) 
+    # Prepare loop
+    combination_len = reduce(mul, range_len)
     eef_poses = []
+    it = 0
     
     # A giant mess of nested for-loops to send each combination out to the fk solver
     for i in range(0,range_len[0]):
@@ -201,15 +202,22 @@ def generate_robot_workspace(joint_limits):
                                      resp.pose_stamped[0].pose.position.y, 
                                      resp.pose_stamped[0].pose.position.z]
                             eef_poses.append(point)
-                            print [i,j,k,l,m]
+                            # Display the progress of the run
+                            it += 1
+                            sys.stdout.write("\r" + "Progress: {}%".format(float(it)/float(combination_len)*100.0))
+                            sys.stdout.flush()
                         else:
-                            print("ERROR: error code {} returned!".format(resp.error_code))
+                            print(" ")
+                            rospy.logerr("Error code {} returned! Shutting down.".format(resp.error_code))
                             exit()
-    
+                        
+
+                        
     # Send it to a csv file for later analysis
-    with open("widowx_ws.csv", "wb") as f:
+    with open("left_widowx_ws.csv", "wb") as f:
         writer = csv.writer(f)
         writer.writerows(eef_poses)
+        print(" ")
 
 
 if __name__ == "__main__":
