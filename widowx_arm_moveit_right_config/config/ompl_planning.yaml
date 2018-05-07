@@ -172,5 +172,3 @@ widowx_gripper:
     - LazyPRMstarkConfigDefault
     - SPARSkConfigDefault
     - SPARStwokConfigDefault
-  projection_evaluator: joints(gripper_joint,gripper_prismatic_joint_2)
-  longest_valid_segment_fraction: 0.005

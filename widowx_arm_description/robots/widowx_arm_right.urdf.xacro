@@ -1,48 +1,32 @@
 <?xml version="1.0" ?>
 <robot name="widowx_arm" xmlns:xacro="http://ros.org/wiki/xacro">
-
-	<xacro:include filename="$(find widowx_arm_description)/urdf/widowx_mod.urdf.xacro"/>
-
-  <xacro:include filename="$(find widowx_arm_description)/urdf/common_materials.xacro" />
+	<xacro:include filename="$(find widowx_arm_description)/urdf/widowx.urdf.xacro"/>
 	
-  <link name="base_link">
-    <visual>
-      <geometry>
-        <box size="0.3048 0.3048 0.00635"/>
-      </geometry>
-      <xacro:material_yellow/>
-    </visual>
-    <!--Can't get collision to work for this link; likely a collision issue with the torso.-->
-  </link>
+	<link name="origin_point">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+		</visual>
+	</link>
 
-  <link name="torso">
-    <visual>
-      <geometry>
-        <box size="0.20 0.12 0.35"/>
-      </geometry>
-      <xacro:material_yellow/>
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.20 0.12 0.35"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <!--placeholders-->
-      <origin xyz="0.100 0.060 0.175" rpy="0 0 0"/>
-      <mass value="1"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
+	<link name="base_footprint">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+			</geometry>
+		</visual>
+	</link>
 
-  <joint name="waist_joint" type="fixed">
-    <origin xyz="0 0 0.178175" rpy="0 0 0"/>
-    <parent link="base_link"/>
-    <child link="torso"/>
-  </joint>
+	<joint name="fake_torso_joint" type="fixed">
+		<parent link="origin_point"/>
+		<child link="base_footprint"/>
+		<origin xyz="0.0 -0.027 0.2659" rpy="1.5707963268 0.0 0.0"/>
+	</joint>
 
-	<xacro:widowx_arm parent="torso" prefix="">
-		<origin xyz="0 -0.087 0.0877273" rpy="1.5707963268 0 0"/>
+	<xacro:widowx_arm parent="base_footprint" prefix="">
+		<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
 	</xacro:widowx_arm>
-
 </robot>
