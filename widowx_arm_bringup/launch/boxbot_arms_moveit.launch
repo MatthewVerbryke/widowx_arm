@@ -10,19 +10,27 @@
   <!-- By default, we are not in debug mode -->
   <arg name="debug" default="false" />
 
-  <!-- By default, we are not using a SR300 depth sensor -->
-  <arg name="sr300" default="false"/>
+  <!-- By default, we are not running in tandem with a Gazebo model (note: if running Gazebo, 'sim' should be false)-->
+  <arg name="gazebo" default="false"/>
+
+  <!-- By default, we are running the left arm model (false means run the right arm model)-->
+  <arg name="left_arm" default="true"/>
   
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
-  <include file="$(find widowx_arm_moveit_right_config)/launch/planning_context.launch">
+  <include if="$(arg left_arm)" file="$(find widowx_arm_moveit_left_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <include unless="$(arg left_arm)" file="$(find widowx_arm_moveit_right_config)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
   </include>
 
   <!-- If needed, broadcast static tf for robot root -->
   
   <!-- Start arm controller if we are not in simulation mode -->
-  <include unless="$(arg sim)" file="$(find widowx_arm_bringup)/launch/right_arm.launch">
-    <arg name="sr300" value="$(arg sr300)"/>
+  <include unless="$(arg sim)" file="$(find widowx_arm_bringup)/launch/boxbot_arms.launch">
+    <arg name="left_arm" value="$(arg left_arm)"/>
+    <arg name="gazebo" value="$(arg gazebo)"/>
   </include>
 
   <!-- Publish fake joint states if we do not have a robot connected -->
@@ -37,7 +45,14 @@
   <!-- Run the main MoveIt executable:
         - with trajectory execution, assuming we have controllers configured and running
         - without trajectory execution on simulation -->
-  <include file="$(find widowx_arm_moveit_right_config)/launch/move_group.launch">
+  <include if="$(arg left_arm)" file="$(find widowx_arm_moveit_left_config)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>  
+    <arg name="fake_execution" value="$(arg sim)"/>
+    <arg name="info" value="true"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+  <include unless="$(arg left_arm)" file="$(find widowx_arm_moveit_right_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>  
     <arg name="fake_execution" value="$(arg sim)"/>
     <arg name="info" value="true"/>
@@ -45,12 +60,18 @@
   </include>
 
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
-  <include file="$(find widowx_arm_moveit_right_config)/launch/moveit_rviz.launch">
+  <include if="$(arg left_arm)" file="$(find widowx_arm_moveit_left_config)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+  <include unless="$(arg left_arm)" file="$(find widowx_arm_moveit_right_config)/launch/moveit_rviz.launch">
     <arg name="config" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>
 
   <!-- If database loading was enabled, start mongodb as well -->
-  <include file="$(find widowx_arm_moveit_right_config)/launch/default_warehouse_db.launch" if="$(arg db)"/>
+  <include if="$(arg db)" file="$(find widowx_arm_moveit_config)/launch/default_warehouse_db.launch"/>
+
 
 </launch>
