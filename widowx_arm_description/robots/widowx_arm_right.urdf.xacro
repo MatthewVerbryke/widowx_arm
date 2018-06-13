@@ -23,7 +23,7 @@
 	<joint name="fake_torso_joint" type="fixed">
 		<parent link="origin_point"/>
 		<child link="base_footprint"/>
-		<origin xyz="0.0 -0.027 0.2659" rpy="1.5707963268 0.0 0.0"/>
+		<origin xyz="0.0 -0.027325 0.26035" rpy="1.5707963268 0.0 0.0"/>
 	</joint>
 
 	<xacro:widowx_arm parent="base_footprint" prefix="">
