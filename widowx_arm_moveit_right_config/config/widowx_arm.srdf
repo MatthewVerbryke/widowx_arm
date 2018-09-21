@@ -23,6 +23,27 @@
         <joint name="joint_4" value="0" />
         <joint name="joint_5" value="0" />
     </group_state>
+    <group_state name="vertical_start" group="widowx_arm">
+        <joint name="joint_1" value="-0.430967" />
+        <joint name="joint_2" value="0.674721" />
+        <joint name="joint_3" value="-0.428684" />
+        <joint name="joint_4" value="1.324760" />
+        <joint name="joint_5" value="-0.430967" />
+    </group_state>
+    <group_state name="horizontal_start" group="widowx_arm">
+        <joint name="joint_1" value="0" />
+        <joint name="joint_2" value="0.386687" />
+        <joint name="joint_3" value="-0.441830" />
+        <joint name="joint_4" value="1.625939" />
+        <joint name="joint_5" value="0" />
+    </group_state>
+    <group_state name="rotation_start" group="widowx_arm">
+        <joint name="joint_1" value="0" />
+        <joint name="joint_2" value="0.492083" />
+        <joint name="joint_3" value="-0.0852091" />
+        <joint name="joint_4" value="1.163922" />
+        <joint name="joint_5" value="0" />
+    </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="main_eff" parent_link="wrist_2_link" group="widowx_gripper" parent_group="widowx_arm" />
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
